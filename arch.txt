@@ -1,0 +1,1279 @@
+Stallion Gym — Dynamic Website + CMS Plan
+
+Based on everything you've described, I would build this as one complete system with two interfaces:
+
+Public Stallion website — what customers see.
+Stallion CMS/Admin Dashboard — what owners/managers use to control the website.
+
+The most important requirement is that owners must be able to manage content without technical knowledge.
+
+1. Overall Architecture
+                         ┌─────────────────────────┐
+                         │   PUBLIC STALLION SITE  │
+                         │       Next.js           │
+                         └────────────┬────────────┘
+                                      │
+                                      │ HTTPS / REST API
+                                      ▼
+                         ┌─────────────────────────┐
+                         │       BACKEND API       │
+                         │     Node.js + Express   │
+                         │                         │
+                         │ Authentication          │
+                         │ Authorization / RBAC    │
+                         │ Validation              │
+                         │ Rate Limiting           │
+                         │ Image Processing        │
+                         └────────────┬────────────┘
+                                      │
+                     ┌────────────────┼────────────────┐
+                     │                │                │
+                     ▼                ▼                ▼
+              ┌────────────┐  ┌──────────────┐  ┌─────────────┐
+              │  MongoDB   │  │ Image / CDN  │  │    Auth     │
+              │            │  │   Storage    │  │             │
+              │ Content    │  │              │  │ Owners      │
+              │ Users      │  │ Photos       │  │ Managers    │
+              │ Events     │  │ Gallery      │  │ Trainers    │
+              │ Trainers   │  │ Banners      │  │             │
+              │ Branches   │  │              │  │             │
+              └────────────┘  └──────────────┘  └─────────────┘
+                                      ▲
+                                      │
+                         ┌────────────┴────────────┐
+                         │     STALLION CMS        │
+                         │      Admin Panel        │
+                         └─────────────────────────┘
+2. Technology Stack
+
+For the demo, I recommend:
+
+Layer	Technology
+Public website	Next.js + TypeScript
+Styling	Tailwind CSS
+UI components	shadcn/ui
+Backend	Node.js + Express + TypeScript
+Database	MongoDB
+Image storage	Cloudinary initially
+Authentication	Secure session/JWT architecture
+Password hashing	Argon2id/bcrypt
+API	REST
+Validation	Zod
+Deployment	Free-tier services initially
+Maps	Google Maps / Maps embed initially
+Version control	Git + GitHub
+
+The exact free hosting/storage providers can be finalized when we deploy because their free-tier limits can change.
+
+3. Website Architecture
+Navbar
+┌────────────────────────────────────────────────────────────┐
+│ STALLION LOGO                                               │
+│                                                            │
+│ Home  About Us  Events  Branches  Classic  Extreme         │
+│ Academy                                      [Contact Us]   │
+└────────────────────────────────────────────────────────────┘
+
+Mobile:
+
+STALLION                              ☰
+4. Homepage Architecture
+HOME
+ │
+ ├── Hero Section
+ │
+ ├── About Stallion
+ │
+ ├── About Owners
+ │
+ ├── Training Programs
+ │     ├── Stallion Strength
+ │     ├── Heat Inferno
+ │     ├── Functional Warrior
+ │     ├── Boxing Conditioning
+ │     ├── Mobility Mastery
+ │     └── Elite One-on-One Coaching
+ │
+ ├── Powered By Brands
+ │
+ ├── Find Your Stallion Home
+ │     └── 6 Branches
+ │
+ ├── Reviews
+ │
+ ├── Pricing
+ │
+ ├── FAQ
+ │
+ ├── Contact / CTA
+ │
+ └── Footer
+5. Public Pages
+
+We'll create:
+
+/
+├── Home
+├── /about
+├── /events
+├── /events/[slug]
+├── /branches
+├── /branches/[slug]
+├── /stallion-classic
+├── /stallion-extreme
+├── /stallion-academy
+├── /trainers
+├── /pricing
+├── /reviews
+├── /faq
+└── /contact
+
+This gives us proper SEO-friendly routes instead of putting everything into one giant page.
+
+6. Dynamic Content Model
+
+This is the critical part.
+
+Trainers
+Trainer
+├── name
+├── profileImage
+├── designation
+├── specialization
+├── bio
+├── experience
+├── branch
+├── programs
+├── socialLinks
+├── displayOrder
+└── status
+Events
+Event
+├── title
+├── slug
+├── description
+├── coverImage
+├── date
+├── startTime
+├── endTime
+├── branch
+├── trainer
+├── registrationLink
+├── gallery
+├── status
+└── published
+Branches
+Branch
+├── name
+├── slug
+├── address
+├── latitude
+├── longitude
+├── phone
+├── email
+├── openingHours
+├── images
+├── programs
+├── trainers
+├── mapLink
+└── status
+Programs
+Program
+├── name
+├── slug
+├── description
+├── image
+├── features
+├── trainers
+├── branches
+├── displayOrder
+└── status
+7. CMS Architecture
+
+The owner logs into:
+
+/admin
+
+and gets:
+
+┌───────────────────────────────────────────┐
+│ STALLION CMS                              │
+├───────────────┬───────────────────────────┤
+│ Dashboard     │                           │
+│               │       Dashboard           │
+│ Content       │                           │
+│  Trainers     │   Trainers      24        │
+│  Events       │   Events         8        │
+│  Branches     │   Branches       6        │
+│  Programs     │   Reviews       87        │
+│  Reviews      │                           │
+│  Pricing      │                           │
+│  FAQ          │                           │
+│  Gallery      │                           │
+│               │                           │
+│ Media         │                           │
+│               │                           │
+│ Users         │                           │
+│ Settings      │                           │
+└───────────────┴───────────────────────────┘
+8. Owner Workflow
+
+For example, a new trainer joins.
+
+Current static website
+New trainer
+     ↓
+Contact developer
+     ↓
+Developer changes code
+     ↓
+Build
+     ↓
+Deploy
+     ↓
+Trainer appears
+Our system
+Owner
+ ↓
+CMS
+ ↓
+Trainers
+ ↓
++ Add Trainer
+ ↓
+Upload photo
+ ↓
+Enter information
+ ↓
+Publish
+ ↓
+Database
+ ↓
+API
+ ↓
+Website
+
+No developer required.
+
+9. Security Architecture
+
+This needs to be part of the design from day one.
+
+User
+ ↓
+HTTPS
+ ↓
+Authentication
+ ↓
+Session/token verification
+ ↓
+Role verification
+ ↓
+Permission verification
+ ↓
+Input validation
+ ↓
+Controller
+ ↓
+Database
+
+Roles:
+
+SUPER_ADMIN
+    │
+    └── Everything
+
+OWNER
+    │
+    ├── Website content
+    ├── Trainers
+    ├── Events
+    ├── Branches
+    ├── Programs
+    ├── Reviews
+    ├── Pricing
+    └── FAQ
+
+MANAGER
+    │
+    ├── Events
+    ├── Trainers
+    ├── Gallery
+    └── Branch content
+
+TRAINER
+    │
+    ├── Own profile
+    ├── Own classes
+    └── Own events
+
+The backend—not merely the frontend—must enforce these permissions.
+
+10. Image Architecture
+
+Because you said image data will be significant, this should be designed properly.
+
+                  IMAGE UPLOAD
+                       │
+                       ▼
+                Authentication
+                       │
+                       ▼
+                 File Validation
+                       │
+              ┌────────┴────────┐
+              │                 │
+          File type          File size
+              │                 │
+              └────────┬────────┘
+                       ▼
+                Image Processing
+                       │
+                ┌──────┴──────┐
+                ▼             ▼
+             WebP/AVIF    Multiple sizes
+                │             │
+                └──────┬──────┘
+                       ▼
+                 Image Storage
+                       │
+                       ▼
+                     CDN
+                       │
+                       ▼
+                 Public Website
+
+MongoDB stores metadata and image URLs, not huge image binaries.
+
+11. CMS Media Library
+
+Owners should have:
+
+Media Library
+
+[Upload Images]
+
+Search: ___________
+
+All
+Trainers
+Events
+Branches
+Gallery
+Programs
+Banners
+
+┌─────┐ ┌─────┐ ┌─────┐
+│ IMG │ │ IMG │ │ IMG │
+└─────┘ └─────┘ └─────┘
+
+They should be able to reuse existing images rather than uploading duplicates.
+
+12. API Architecture
+
+Example API structure:
+
+/api/v1
+│
+├── /auth
+│   ├── login
+│   ├── logout
+│   └── me
+│
+├── /trainers
+│   ├── GET
+│   ├── POST
+│   ├── PUT
+│   └── DELETE
+│
+├── /events
+│
+├── /branches
+│
+├── /programs
+│
+├── /reviews
+│
+├── /pricing
+│
+├── /faq
+│
+├── /gallery
+│
+├── /media
+│
+└── /users
+
+Public endpoints should return only public information.
+
+Private/admin endpoints require authentication and authorization.
+
+13. Database Structure
+MongoDB
+│
+├── users
+├── roles
+├── trainers
+├── programs
+├── events
+├── branches
+├── reviews
+├── pricing_plans
+├── faqs
+├── gallery
+├── media
+├── site_settings
+└── audit_logs
+
+We should also use indexes for frequently queried fields such as:
+
+slug
+status
+branchId
+eventDate
+published
+createdAt
+14. Important CMS Features
+
+The CMS should support:
+
+Draft / Publish
+
+Instead of immediately changing the website:
+
+Draft
+  ↓
+Preview
+  ↓
+Publish
+
+This is particularly useful for events and announcements.
+
+Scheduled publishing
+
+Later we can support:
+
+Publish:
+20 August 2026
+10:00 AM
+Soft deletion
+
+Instead of immediately destroying data:
+
+Active
+Inactive
+Archived
+
+This prevents accidental data loss.
+
+Audit logs
+Owner
+ ↓
+Changed Trainer
+ ↓
+12 Aug 2026
+ ↓
+Recorded in audit log
+15. The Master Prompt
+
+You can give the following prompt to a coding AI/agent to start generating the project.
+
+Build a Production-Ready Dynamic Gym Website + CMS for Stallion
+
+Build a modern, responsive, secure and scalable gym website for Stallion with a separate owner/manager CMS dashboard.
+
+The system must be designed from the beginning as a dynamic content management platform, not as a static website.
+
+The most important business requirement is:
+
+Gym owners and authorized staff must be able to manage trainers, events, event galleries, branches, programs, reviews, pricing, FAQs, images and other website content without touching source code, databases or APIs.
+
+1. Technology Stack
+
+Use:
+
+Next.js
+TypeScript
+Tailwind CSS
+shadcn/ui
+Node.js
+Express
+TypeScript
+MongoDB
+REST API
+Zod validation
+Secure authentication
+Role-Based Access Control
+Cloudinary or an equivalent image-storage/CDN service
+Git/GitHub
+
+Keep the architecture modular so additional gym services can be added later without rebuilding the system.
+
+2. Application Structure
+
+Create two major applications/interfaces:
+
+Public Website
+
+Used by customers and visitors.
+
+Admin CMS
+
+Used by Stallion owners, managers and authorized trainers.
+
+Recommended structure:
+
+project/
+├── frontend/
+├── backend/
+├── shared/
+├── docs/
+└── README.md
+
+Keep frontend and backend logically separated.
+
+3. Public Website Navigation
+
+Create the following navbar:
+
+Stallion Logo
+Home
+About Us
+Events
+Branches
+Stallion Classic
+Stallion Extreme
+Stallion Academy
+Contact Us
+
+Make the navbar responsive and mobile-friendly.
+
+4. Homepage
+
+Build the homepage with these sections:
+
+Hero section
+About Stallion
+About the owners
+Training/program section
+Powered by Brands section
+Find Your Stallion Home section
+Six gym branches
+Reviews
+Pricing
+FAQ/Q&A
+Contact CTA
+Footer
+Map/location section where appropriate
+
+Do not hardcode content that should be managed by the CMS.
+
+5. Programs
+
+Initially support:
+
+Stallion Strength
+Heat Inferno
+Functional Warrior
+Boxing Conditioning
+Mobility Mastery
+Elite One-on-One Coaching
+
+Create a dynamic Program model.
+
+Each program should support:
+
+Name
+Slug
+Description
+Image
+Features
+Trainers
+Branches
+Display order
+Active/inactive status
+Published state
+
+The CMS must allow owners to add, edit, reorder, publish, unpublish and archive programs.
+
+6. Trainers
+
+Create a complete trainer management system.
+
+Trainer fields:
+
+Name
+Profile image
+Designation
+Specialization
+Biography
+Experience
+Branch
+Programs
+Social links
+Display order
+Status
+
+CMS functionality:
+
+Add trainer
+Edit trainer
+Upload/change image
+Assign branch
+Assign programs
+Publish/unpublish
+Disable trainer
+Archive trainer
+
+A new trainer added through the CMS must automatically appear on the public website.
+
+A trainer disabled by an authorized owner must no longer appear publicly.
+
+Do not require developer involvement for trainer management.
+
+7. Events
+
+Create dynamic event management.
+
+Event fields:
+
+Title
+Slug
+Description
+Cover image
+Date
+Start time
+End time
+Branch/location
+Trainer
+Registration URL
+Gallery
+Status
+Published state
+
+CMS functionality:
+
+Create
+Edit
+Publish
+Unpublish
+Archive
+Delete/soft-delete
+Manage event gallery
+
+Create event detail pages using slugs.
+
+8. Event Gallery
+
+Create a media/gallery system allowing authorized users to upload multiple images for an event.
+
+Support:
+
+Multiple uploads
+Image preview
+Reordering
+Delete/archive
+Reuse existing media
+Image optimization
+CDN delivery
+9. Branches
+
+Initially support six branches, but do not hardcode the number six in the architecture.
+
+The system must support adding more branches later.
+
+Branch fields:
+
+Name
+Slug
+Address
+Phone
+Email
+Latitude
+Longitude
+Google Maps URL
+Opening hours
+Images
+Programs
+Trainers
+Status
+
+Create branch detail pages.
+
+Create a "Find Your Stallion Home" section displaying available branches dynamically.
+
+10. Stallion Classic / Extreme / Academy
+
+Create these as configurable brand/product sections rather than hardcoded visual-only pages.
+
+The architecture must allow each to have:
+
+Title
+Description
+Hero image
+Content sections
+Images
+Programs
+Trainers
+Branches
+CTA
+Status
+
+The CMS should eventually allow owners to modify this content.
+
+11. Reviews
+
+Create a review management system.
+
+Review fields:
+
+Name
+Rating
+Review text
+Image/avatar if required
+Source
+Branch
+Status
+Published state
+
+Support:
+
+Pending
+Approved
+Hidden
+Archived
+
+Only approved reviews should appear publicly.
+
+12. Pricing
+
+Create dynamic pricing plans.
+
+Fields:
+
+Plan name
+Description
+Price
+Billing period
+Features
+Branches
+Highlighted/recommended flag
+Display order
+Active status
+
+Owners must be able to update pricing without changing code.
+
+13. FAQ / Q&A
+
+Create dynamic FAQ management.
+
+Fields:
+
+Question
+Answer
+Category
+Display order
+Published status
+
+Owners must be able to add, edit, reorder and remove FAQs.
+
+14. About Us
+
+Create CMS-managed content for:
+
+About Stallion
+Brand story
+Mission
+Vision
+Owners
+Owner profiles
+Achievements
+Images
+15. Footer
+
+Create a professional footer containing:
+
+Stallion branding
+About link
+Events
+Branches
+Trainers
+Pricing
+Reviews
+FAQ
+Contact
+Branch information
+Social links
+Legal links
+
+Where appropriate, footer content should be configurable from the CMS.
+
+16. CMS Dashboard
+
+Create:
+
+/admin
+
+with:
+
+Dashboard
+Trainers
+Events
+Event Gallery
+Programs
+Branches
+Reviews
+Pricing
+FAQ
+About Us
+Media Library
+Users
+Settings
+Audit Logs
+
+The UI must be extremely simple for non-technical gym owners.
+
+Do not expose database concepts, API terminology or technical configuration unnecessarily.
+
+17. Role-Based Access Control
+
+Implement:
+
+SUPER_ADMIN
+
+Full access.
+
+OWNER
+
+Access to website content, trainers, events, branches, programs, gallery, reviews, pricing and FAQ.
+
+MANAGER
+
+Limited content-management permissions.
+
+TRAINER
+
+Only access resources specifically assigned to them, such as their profile/classes/events.
+
+Authorization must be enforced on the backend.
+
+Do not rely only on hiding frontend buttons.
+
+18. Authentication
+
+Implement secure authentication.
+
+Requirements:
+
+Password hashing using Argon2id or bcrypt
+Secure session/token handling
+HTTPS-ready architecture
+Login rate limiting
+Input validation
+Secure logout
+Password reset architecture
+No passwords returned through APIs
+No secrets exposed to frontend code
+
+Never store plaintext passwords.
+
+19. Image Architecture
+
+Do NOT store large image binaries inside MongoDB.
+
+Use external object/image storage and CDN.
+
+Flow:
+
+User upload
+→ Authentication
+→ File validation
+→ Size validation
+→ Image processing
+→ Compression
+→ WebP/AVIF where appropriate
+→ Multiple responsive sizes
+→ Image storage/CDN
+→ URL/metadata stored in MongoDB
+
+Implement:
+
+Allowed MIME types
+File-size limits
+Image dimension validation
+Duplicate/reuse strategy where practical
+Optimized delivery
+Secure upload handling
+
+The architecture must remain suitable for large amounts of gym photography.
+
+20. API
+
+Create REST APIs under:
+
+/api/v1
+
+Organize endpoints into:
+
+/auth
+/trainers
+/events
+/branches
+/programs
+/reviews
+/pricing
+/faq
+/gallery
+/media
+/users
+/settings
+
+Separate public and protected operations.
+
+Public APIs must return only fields that are safe to expose.
+
+Admin APIs must require authentication and appropriate authorization.
+
+21. Database
+
+Create MongoDB collections/models for:
+
+users
+trainers
+programs
+events
+branches
+reviews
+pricing_plans
+faqs
+gallery
+media
+site_settings
+audit_logs
+
+Use proper references between entities.
+
+Add appropriate indexes for:
+
+slug
+status
+published
+branch
+event date
+createdAt
+
+Do not expose database credentials to the frontend.
+
+22. Security Requirements
+
+Implement:
+
+HTTPS-ready deployment
+Authentication
+RBAC
+Server-side authorization
+Request validation
+Rate limiting
+Secure headers
+CORS configuration
+Input sanitization
+File upload validation
+Protected admin routes
+Secure secrets through environment variables
+Database access restricted to backend
+No sensitive information in public APIs
+Audit logs
+Soft deletion where appropriate
+23. CMS Publishing Workflow
+
+Support:
+
+Draft
+ ↓
+Preview
+ ↓
+Publish
+ ↓
+Public Website
+
+Allow content to be unpublished without permanently deleting it.
+
+24. Public Website Performance
+
+Optimize for:
+
+Mobile
+SEO
+Fast loading
+Image optimization
+Lazy loading
+Responsive images
+CDN delivery
+Accessible navigation
+Semantic HTML
+Good Core Web Vitals
+
+Do not load unnecessarily large images.
+
+25. UI/UX
+
+Design should feel like a premium modern fitness brand.
+
+Avoid:
+
+Gaming-style UI
+Excessive gradients
+Clutter
+Excessive animations
+Generic dashboard templates
+
+Use:
+
+Strong typography
+Premium fitness aesthetic
+High-quality photography
+Clear CTAs
+Consistent spacing
+Responsive layouts
+Professional admin dashboard
+
+The public site should feel premium while the CMS should prioritize simplicity.
+
+26. Future Extensibility
+
+The system must be designed so additional modules can be added later.
+
+Potential future modules include:
+
+Membership management
+Class scheduling
+Bookings
+Personal training
+Leads
+Notifications
+WhatsApp integration
+Payments
+Attendance
+Offers
+Coupons
+Loyalty
+CRM
+Analytics
+
+Do not implement these unless explicitly requested. Prepare the architecture so they can be added later.
+
+27. Development Requirements
+
+Build the project incrementally.
+
+First create:
+
+Project structure
+Database connection
+Authentication
+RBAC
+Public website shell
+CMS shell
+Trainer CRUD
+Event CRUD
+Branch CRUD
+Program CRUD
+Image management
+Reviews
+Pricing
+FAQ
+About content
+Audit logs
+Security hardening
+Responsive design
+Testing
+Deployment documentation
+
+Do not generate a fake frontend with hardcoded arrays pretending to be dynamic.
+
+Every major CMS-managed entity must actually flow:
+
+CMS
+→ API
+→ Database
+→ Public API
+→ Website
+28. Environment Variables
+
+Never hardcode secrets.
+
+Use .env variables for:
+
+Database URI
+Authentication secrets
+Image storage credentials
+API keys
+Other private configuration
+
+Provide .env.example without real secrets.
+
+29. Documentation
+
+Create a README explaining:
+
+Architecture
+Installation
+Environment variables
+Database setup
+Image storage setup
+Running frontend
+Running backend
+Creating first admin
+API structure
+Deployment
+Security considerations
+How to add future modules
+30. Important Final Requirement
+
+The project must be built as a real dynamic CMS-backed website, not merely as a visual prototype.
+
+Demonstrate this workflow:
+
+Owner logs into CMS
+        ↓
+Adds a new trainer
+        ↓
+Uploads trainer photo
+        ↓
+Publishes trainer
+        ↓
+Backend validates request
+        ↓
+Database stores trainer information
+        ↓
+Image storage stores optimized image
+        ↓
+Public API returns trainer
+        ↓
+Trainer automatically appears on website
+
+Repeat the same principle for:
+
+Events
+Event galleries
+Branches
+Programs
+Reviews
+Pricing
+FAQ
+
+The final result should be maintainable, secure, scalable and usable by non-technical Stallion gym owners.
+
+16. Development Roadmap
+
+I recommend we don't generate the entire application in one shot. Build it in stages.
+
+Stage 1 — Foundation
+Project setup
+       ↓
+Frontend
+Backend
+Database
+Environment
+Git
+Stage 2 — Authentication
+Login
+ ↓
+Sessions
+ ↓
+Roles
+ ↓
+Protected dashboard
+Stage 3 — CMS
+Trainers
+Events
+Branches
+Programs
+Stage 4 — Media
+Upload
+ ↓
+Optimize
+ ↓
+Store
+ ↓
+CDN
+Stage 5 — Additional content
+Reviews
+Pricing
+FAQ
+About
+Gallery
+Stage 6 — Public website
+
+Connect every CMS module to the public frontend.
+
+Stage 7 — Security + testing
+Authorization
+Validation
+Rate limiting
+Upload security
+API testing
+UI testing
+Stage 8 — Deployment
+GitHub
+ ↓
+Frontend hosting
+ ↓
+Backend hosting
+ ↓
+MongoDB
+ ↓
+Image CDN
+ ↓
+Domain
+17. The Most Important Demo Test
+
+Before we call the demo successful, we should perform this exact test:
+
+Test 1 — Trainer
+
+Owner → Add Trainer
+              ↓
+       Upload Image
+              ↓
+           Publish
+              ↓
+     Open public website
+              ↓
+     Trainer appears
+
+Test 2 — Event
+
+Owner → Create Event
+              ↓
+           Publish
+              ↓
+      Events page updates
+
+Test 3 — Image
+
+Owner → Upload 5 photos
+              ↓
+       Photos optimized
+              ↓
+       Gallery updated
+
+Test 4 — Security
+
+Trainer account
+       ↓
+Attempt to modify another trainer
+       ↓
+       DENIED
+
+Test 5 — Non-technical owner
+
+A person who has zero programming knowledge should be able to add a trainer/event after a short explanation.
+
+That is the real success criterion for this project.
+
+Final architecture in one line
+
+Next.js Public Website + Next.js/React CMS → Secure Node/Express API → MongoDB for structured data + Cloudinary/object storage for images → RBAC + audit logs + validation + CDN.
+
+When you provide the complete Stallion service list, we can plug those services into this architecture without changing the foundation.
