@@ -14,6 +14,11 @@ import { configureCloudinary } from './config/cloudinary';
 // Import routes
 import authRoutes from './routes/auth';
 import trainerRoutes from './routes/trainers';
+import programRoutes from './routes/programs';
+import branchRoutes from './routes/branches';
+import reviewRoutes from './routes/reviews';
+import faqRoutes from './routes/faqs';
+import pricingRoutes from './routes/pricing';
 
 // Load environment variables
 dotenv.config();
@@ -88,6 +93,11 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/trainers', trainerRoutes);
+app.use('/api/v1/programs', programRoutes);
+app.use('/api/v1/branches', branchRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/faqs', faqRoutes);
+app.use('/api/v1/pricing', pricingRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

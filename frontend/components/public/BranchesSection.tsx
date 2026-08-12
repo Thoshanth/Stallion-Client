@@ -4,46 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const branches = [
-  {
-    name: 'GajulRamaram',
-    image: '/images/ramaramherosection.JPG',
-    hoverImage: '/images/ramaramhover.JPG',
-    slug: 'gajulramaram',
-  },
-  {
-    name: 'IDPL',
-    image: '/images/idplherosec.JPG',
-    hoverImage: '/images/chinthalhover.JPG',
-    slug: 'idpl',
-  },
-  {
-    name: 'Kompally',
-    image: '/images/kompallyherosec.JPG',
-    hoverImage: '/images/subashhover.JPG',
-    slug: 'kompally',
-  },
-  {
-    name: 'Kondapur',
-    image: '/images/kondapurhero.JPG',
-    hoverImage: '/images/kondapurhover.JPG',
-    slug: 'kondapur',
-  },
-  {
-    name: 'Suchitra',
-    image: '/images/suchitrahero.JPG',
-    hoverImage: '/images/suchitrahover.JPG',
-    slug: 'suchitra',
-  },
-  {
-    name: 'Ashok Nagar Bhel',
-    image: '/images/bhelhover.jpg',
-    hoverImage: '/images/bhelcover.jpg',
-    slug: 'ashok-nagar-bhel',
-  },
-];
+interface Branch {
+  name: string;
+  image?: string;
+  hoverImage?: string;
+  slug: string;
+}
 
-const BranchesSection = () => {
+const BranchesSection = ({ branches }: { branches: Branch[] }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -104,7 +72,7 @@ const BranchesSection = () => {
                 >
                   {/* Base Image */}
                   <Image
-                    src={branch.image}
+                    src={branch.image || '/images/hero.png'}
                     alt={branch.name}
                     fill
                     className={`object-cover transition-opacity duration-500 ${
@@ -115,7 +83,7 @@ const BranchesSection = () => {
 
                   {/* Hover Image */}
                   <Image
-                    src={branch.hoverImage}
+                    src={branch.hoverImage || branch.image || '/images/hero.png'}
                     alt={`${branch.name} hover`}
                     fill
                     className={`object-cover transition-opacity duration-500 absolute inset-0 ${

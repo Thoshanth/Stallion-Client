@@ -3,53 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-const pricingPlans = [
-  {
-    name: 'Stallion Basic',
-    popular: false,
-    features: [
-      'Access to gym equipment',
-      'Locker facility',
-      'Basic fitness assessment',
-      'Air conditioned environment',
-    ],
-  },
-  {
-    name: 'Stallion Pro',
-    popular: true,
-    features: [
-      'All Basic features',
-      'Group fitness classes',
-      'Personal trainer consultation',
-      'Nutrition guidance',
-      'Priority booking',
-    ],
-  },
-  {
-    name: 'Stallion Elite',
-    popular: false,
-    features: [
-      'All Pro features',
-      'Unlimited personal training',
-      'Custom meal plans',
-      'Body composition analysis',
-      'Recovery sessions',
-    ],
-  },
-  {
-    name: 'Stallion Legacy',
-    popular: false,
-    features: [
-      'All Elite features',
-      'Lifetime membership',
-      'Guest passes',
-      'Premium supplements',
-      'VIP treatment',
-    ],
-  },
-];
+interface PricingPlan {
+  name: string;
+  popular?: boolean;
+  features: string[];
+}
 
-const PricingSection = () => {
+const PricingSection = ({ pricingPlans }: { pricingPlans: PricingPlan[] }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 

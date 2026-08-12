@@ -3,31 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-const reviews = [
-  {
-    name: 'Paul K',
-    designation: 'Fitness Influencer',
-    rating: 5,
-    review: 'Lost 28lbs of fat in 12 weeks. The trainers don\'t let you cheat – even when you want to.',
-    avatar: '/images/jake.png',
-  },
-  {
-    name: 'Syra',
-    designation: 'Make up artist',
-    rating: 5,
-    review: 'I spend 10-hour days making others look fierce—Stallion Extreme is where I unleash my own strength.',
-    avatar: '/images/syra.png',
-  },
-  {
-    name: 'Krishna',
-    designation: 'Footballer',
-    rating: 5,
-    review: 'This gym took my game from good to lethal. Coach explosive leg circuits added 3 yards to my sprint speed.',
-    avatar: '/images/krishna.png',
-  },
-];
+interface Review {
+  name: string;
+  designation?: string;
+  rating: number;
+  reviewText: string;
+  avatar?: string;
+}
 
-const ReviewsSection = () => {
+const ReviewsSection = ({ reviews }: { reviews: Review[] }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -96,19 +80,21 @@ const ReviewsSection = () => {
 
                 {/* Review Text */}
                 <p className="text-gray-700 mb-6 font-degular text-base leading-relaxed">
-                  "{review.review}"
+                  "{review.reviewText}"
                 </p>
 
                 {/* Author */}
                 <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                    <Image
-                      src={review.avatar}
-                      alt={review.name}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
+                    {review.avatar && (
+                      <Image
+                        src={review.avatar}
+                        alt={review.name}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900 font-akira">-{review.name}</p>

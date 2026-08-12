@@ -2,34 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const faqs = [
-  {
-    question: 'What are the gym timings?',
-    answer: 'Our gyms are open from 6:00 AM to 10:00 PM, 7 days a week. Some branches may have extended hours.',
-  },
-  {
-    question: 'Do I need to bring my own equipment?',
-    answer: 'No, we provide all the equipment you need including towels, mats, and professional-grade fitness equipment. Just bring your water bottle and workout attire.',
-  },
-  {
-    question: 'Are personal trainers available?',
-    answer: 'Yes, we have certified personal trainers available at all branches. You can book sessions as part of your membership or pay per session.',
-  },
-  {
-    question: 'Can I freeze my membership?',
-    answer: 'Yes, you can freeze your membership for up to 3 months per year for medical reasons or extended travel with proper documentation.',
-  },
-  {
-    question: 'Do you offer trial sessions?',
-    answer: 'Absolutely! We offer complimentary trial sessions for first-time visitors. Contact us to schedule your trial.',
-  },
-  {
-    question: 'What safety measures do you have in place?',
-    answer: 'We maintain strict safety protocols including regular equipment sanitization, proper ventilation, emergency procedures, and trained staff on-site.',
-  },
-];
+interface FAQ {
+  question: string;
+  answer: string;
+}
 
-const FAQSection = () => {
+const FAQSection = ({ faqs }: { faqs: FAQ[] }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);

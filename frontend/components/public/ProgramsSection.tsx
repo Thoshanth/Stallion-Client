@@ -3,44 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-const programs = [
-  {
-    name: 'Stallion Strength',
-    description:
-      'Build raw power with Olympic lifts, deadlifts, and our signature strength protocols',
-    image: '/images/strength.png',
-  },
-  {
-    name: 'HIIT Inferno',
-    description:
-      'Torch fat in 30 mins with battle ropes, sled pushes, and metabolic conditioning',
-    image: '/images/inferno.png',
-  },
-  {
-    name: 'Functional Warrior',
-    description: 'Train like an athlete—agility drills, sandbag work, and real-world mobility',
-    image: '/images/warrior.png',
-  },
-  {
-    name: 'Boxing Conditioning',
-    description:
-      'Combines heavy bag work, footwork drills, and fight-ready endurance training',
-    image: '/images/boxing.png',
-  },
-  {
-    name: 'Mobility Mastery',
-    description:
-      'Recover smarter with guided stretching, yoga flows, and injury prevention',
-    image: '/images/mobility.png',
-  },
-  {
-    name: 'Elite 1:1 Coaching',
-    description: 'Fully customized plans with your dedicated trainer (nutrition included)',
-    image: '/images/coaching.png',
-  },
-];
+interface Program {
+  name: string;
+  description: string;
+  image?: string;
+  slug: string;
+}
 
-const ProgramsSection = () => {
+const ProgramsSection = ({ programs }: { programs: Program[] }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -99,7 +69,7 @@ const ProgramsSection = () => {
             >
               <div className="relative overflow-hidden group aspect-[418/532] cursor-pointer">
                 <Image
-                  src={program.image}
+                  src={program.image || '/images/hero.png'}
                   alt={program.name}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
