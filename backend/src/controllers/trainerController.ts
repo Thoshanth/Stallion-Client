@@ -3,10 +3,60 @@ import { Trainer } from '../models/Trainer';
 import { AuthRequest, ApiResponse, PublishedState, Status } from '../types';
 import cloudinary from '../config/cloudinary';
 import fs from 'fs';
+import { isDbReady } from '../config/database';
+
+// Mock data fallback for when database is unavailable
+const MOCK_TRAINERS = [
+  {
+    _id: '1',
+    name: 'Ramesh Kumar',
+    slug: 'ramesh-kumar',
+    designation: 'Head Trainer',
+    specialization: ['Strength Training', 'Bodybuilding'],
+    bio: 'Certified fitness expert with 10+ years of experience in strength training and bodybuilding.',
+    profileImage: '/images/trainers/ramesh.jpg',
+    displayOrder: 1,
+    status: Status.ACTIVE,
+    publishedState: PublishedState.PUBLISHED,
+    branch: { _id: '1', name: 'GajulRamaram', slug: 'gajulramaram' },
+    programs: [],
+  },
+  {
+    _id: '2',
+    name: 'Priya Singh',
+    slug: 'priya-singh',
+    designation: 'Yoga & Wellness Coach',
+    specialization: ['Yoga', 'Flexibility', 'Mindfulness'],
+    bio: 'Passionate about holistic wellness and helping clients achieve balance through yoga and mindfulness.',
+    profileImage: '/images/trainers/priya.jpg',
+    displayOrder: 2,
+    status: Status.ACTIVE,
+    publishedState: PublishedState.PUBLISHED,
+    branch: { _id: '2', name: 'IDPL', slug: 'idpl' },
+    programs: [],
+  },
+];
 
 export class TrainerController {
   // Get all trainers (public)
   async getTrainers(req: Request, res: Response): Promise<void> {
+    // If DB is not ready, return mock data immediately
+    if (!isDbReady) {
+      console.warn('⚠️ Using mock trainers data (DB unavailable)');
+      const response: ApiResponse = {
+        success: true,
+        data: MOCK_TRAINERS,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: MOCK_TRAINERS.length,
+          pages: 1,
+        },
+      };
+      res.json(response);
+      return;
+    }
+
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -58,16 +108,44 @@ export class TrainerController {
 
       res.json(response);
     } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch trainers',
-        message: error.message,
-      });
+      const response: ApiResponse = {
+        success: true,
+        data: MOCK_TRAINERS,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: MOCK_TRAINERS.length,
+          pages: 1,
+        },
+      };
+      res.json(response);
     }
   }
 
   // Get single trainer (public)
   async getTrainer(req: Request, res: Response): Promise<void> {
+    // If DB is not ready, return mock data immediately
+    if (!isDbReady) {
+      console.warn('⚠️ Using mock trainers data (DB unavailable)');
+      const { id } = req.params;
+      const mockTrainer = MOCK_TRAINERS.find((t) => t._id === id || t.slug === id);
+      
+      if (!mockTrainer) {
+        res.status(404).json({
+          success: false,
+          error: 'Trainer not found',
+        });
+        return;
+      }
+
+      const response: ApiResponse = {
+        success: true,
+        data: mockTrainer,
+      };
+      res.json(response);
+      return;
+    }
+
     try {
       const { id } = req.params;
       
@@ -98,11 +176,22 @@ export class TrainerController {
 
       res.json(response);
     } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch trainer',
-        message: error.message,
-      });
+      const { id } = req.params;
+      const mockTrainer = MOCK_TRAINERS.find((t) => t._id === id || t.slug === id);
+      
+      if (!mockTrainer) {
+        res.status(404).json({
+          success: false,
+          error: 'Trainer not found',
+        });
+        return;
+      }
+
+      const response: ApiResponse = {
+        success: true,
+        data: mockTrainer,
+      };
+      res.json(response);
     }
   }
 

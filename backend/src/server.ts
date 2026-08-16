@@ -19,6 +19,8 @@ import branchRoutes from './routes/branches';
 import reviewRoutes from './routes/reviews';
 import faqRoutes from './routes/faqs';
 import pricingRoutes from './routes/pricing';
+import contactRoutes from './routes/contact';
+import eventRoutes from './routes/events';
 
 // Load environment variables
 dotenv.config();
@@ -98,6 +100,8 @@ app.use('/api/v1/branches', branchRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/faqs', faqRoutes);
 app.use('/api/v1/pricing', pricingRoutes);
+app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/events', eventRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

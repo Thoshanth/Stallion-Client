@@ -3,15 +3,17 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
+import { UserRole } from '../types';
+
 export interface TokenPayload {
   id: string;
   email: string;
-  role: string;
+  role: UserRole;
 }
 
 export const generateToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'],
   });
 };
 
@@ -21,6 +23,6 @@ export const verifyToken = (token: string): TokenPayload => {
 
 export const generateRefreshToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: '30d',
+    expiresIn: '30d' as jwt.SignOptions['expiresIn'],
   });
 };

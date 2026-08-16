@@ -11,6 +11,9 @@ export interface IBranchDocument extends Document {
   latitude?: number;
   longitude?: number;
   googleMapsUrl?: string;
+  mapUrl?: string;
+  image?: string;
+  hoverImage?: string;
   openingHours: {
     monday: { open: string; close: string; closed?: boolean };
     tuesday: { open: string; close: string; closed?: boolean };
@@ -68,6 +71,18 @@ const branchSchema = new Schema<IBranchDocument>(
       max: 180,
     },
     googleMapsUrl: {
+      type: String,
+      trim: true,
+    },
+    mapUrl: {
+      type: String,
+      trim: true,
+    },
+    image: {
+      type: String,
+      trim: true,
+    },
+    hoverImage: {
       type: String,
       trim: true,
     },
