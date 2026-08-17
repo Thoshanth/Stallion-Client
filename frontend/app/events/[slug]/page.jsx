@@ -2,10 +2,12 @@ import { notFound } from 'next/navigation';
 import Navbar from '@/components/public/Navbar';
 import Footer from '@/components/public/Footer';
 
+export const dynamic = 'force-dynamic';
+
 async function getEvent(slug) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/events/${slug}`, {
-      next: { revalidate: 60 }
+      cache: 'no-store'
     });
     
     if (!response.ok) {

@@ -76,7 +76,7 @@ export async function fetchPricingPlans() {
 
 export async function fetchEvents() {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/events`, { next: { revalidate: 60 } });
+    const res = await fetchWithTimeout(`${API_URL}/events`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch events');
     const data = await res.json();
     return data.data;

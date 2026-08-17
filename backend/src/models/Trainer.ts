@@ -95,14 +95,26 @@ const trainerSchema = new Schema<ITrainerDocument>(
 );
 
 // Indexes
-trainerSchema.index({ slug: 1 }, { unique: true });
+// We remove the strict unique index on slug to handle it manually in the pre-save hook
+trainerSchema.index({ slug: 1 });
 trainerSchema.index({ status: 1, publishedState: 1, displayOrder: 1 });
 trainerSchema.index({ branch: 1 });
 
-// Generate slug before saving
-trainerSchema.pre('save', function (next) {
+// Generate unique slug before saving
+trainerSchema.pre('save', async function (next) {
   if (this.isModified('name')) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
+    const baseSlug = slugify(this.name, { lower: true, strict: true });
+    let slug = baseSlug;
+    let counter = 1;
+    
+    const TrainerModel = this.constructor as mongoose.Model<ITrainerDocument>;
+    
+    while (await TrainerModel.exists({ slug, _id: { $ne: this._id } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+    
+    this.slug = slug;
   }
   next();
 });

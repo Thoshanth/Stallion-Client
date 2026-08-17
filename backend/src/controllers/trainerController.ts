@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Trainer } from '../models/Trainer';
 import { AuthRequest, ApiResponse, PublishedState, Status } from '../types';
+import { Branch } from '../models/Branch';
 import cloudinary from '../config/cloudinary';
 import fs from 'fs';
 import { isDbReady } from '../config/database';
@@ -285,6 +286,14 @@ export class TrainerController {
       });
 
       await trainer.save();
+      
+      // Add trainer to the branch's trainers array
+      if (trainer.branch) {
+        await Branch.findByIdAndUpdate(trainer.branch, {
+          $addToSet: { trainers: trainer._id }
+        });
+      }
+
       await trainer.populate(['branch', 'programs']);
 
       const response: ApiResponse = {
@@ -361,6 +370,23 @@ export class TrainerController {
         { new: true, runValidators: true }
       ).populate(['branch', 'programs']);
 
+      // If branch changed, update the branch documents
+      if (updateData.branch && existingTrainer.branch && updateData.branch.toString() !== existingTrainer.branch.toString()) {
+        // Remove from old branch
+        await Branch.findByIdAndUpdate(existingTrainer.branch, {
+          $pull: { trainers: id }
+        });
+        // Add to new branch
+        await Branch.findByIdAndUpdate(updateData.branch, {
+          $addToSet: { trainers: id }
+        });
+      } else if (updateData.branch && !existingTrainer.branch) {
+        // Add to new branch
+        await Branch.findByIdAndUpdate(updateData.branch, {
+          $addToSet: { trainers: id }
+        });
+      }
+
       const response: ApiResponse = {
         success: true,
         message: 'Trainer updated successfully',
@@ -406,6 +432,13 @@ export class TrainerController {
         } catch (deleteError) {
           console.error('Failed to delete image:', deleteError);
         }
+      }
+
+      // Remove trainer from the branch's trainers array
+      if (trainer.branch) {
+        await Branch.findByIdAndUpdate(trainer.branch, {
+          $pull: { trainers: id }
+        });
       }
 
       await Trainer.findByIdAndDelete(id);

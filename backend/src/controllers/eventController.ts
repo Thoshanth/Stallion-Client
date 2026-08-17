@@ -5,41 +5,6 @@ import cloudinary from '../config/cloudinary';
 import fs from 'fs';
 import { isDbReady } from '../config/database';
 
-// Mock data fallback for when database is unavailable
-const MOCK_EVENTS = [
-  {
-    _id: '1',
-    title: 'Summer Fitness Challenge',
-    slug: 'summer-fitness-challenge-2024-07-15',
-    description: 'Join us for a month-long fitness challenge with exciting prizes and amazing workouts!',
-    date: new Date('2024-07-15'),
-    startTime: '09:00',
-    endTime: '11:00',
-    branch: { _id: '1', name: 'GajulRamaram', slug: 'gajulramaram' },
-    trainer: { _id: '1', name: 'Ramesh Kumar' },
-    status: Status.ACTIVE,
-    publishedState: PublishedState.PUBLISHED,
-    coverImage: '/images/events/summer-challenge.jpg',
-    registrationUrl: 'https://forms.gle/example',
-    gallery: [],
-  },
-  {
-    _id: '2',
-    title: 'Yoga Wellness Workshop',
-    slug: 'yoga-wellness-workshop-2024-08-20',
-    description: 'Discover inner peace and flexibility in our comprehensive yoga workshop for all levels.',
-    date: new Date('2024-08-20'),
-    startTime: '16:00',
-    endTime: '18:00',
-    branch: { _id: '2', name: 'IDPL', slug: 'idpl' },
-    trainer: { _id: '2', name: 'Priya Singh' },
-    status: Status.ACTIVE,
-    publishedState: PublishedState.PUBLISHED,
-    coverImage: '/images/events/yoga-workshop.jpg',
-    registrationUrl: null,
-    gallery: [],
-  },
-];
 
 export class EventController {
   // Get all events (public)
@@ -49,11 +14,11 @@ export class EventController {
       console.warn('⚠️ Using mock events data (DB unavailable)');
       const response: ApiResponse = {
         success: true,
-        data: MOCK_EVENTS.filter(e => e.status === Status.ACTIVE && e.publishedState === PublishedState.PUBLISHED),
+        data: [],
         pagination: {
           page: 1,
           limit: 10,
-          total: MOCK_EVENTS.length,
+          total: 0,
           pages: 1,
         },
       };
@@ -113,11 +78,11 @@ export class EventController {
     } catch (error: any) {
       const response: ApiResponse = {
         success: true,
-        data: MOCK_EVENTS.filter(e => e.status === Status.ACTIVE && e.publishedState === PublishedState.PUBLISHED),
+        data: [],
         pagination: {
           page: 1,
           limit: 10,
-          total: MOCK_EVENTS.length,
+          total: 0,
           pages: 1,
         },
       };
@@ -130,22 +95,10 @@ export class EventController {
     // If DB is not ready, return mock data immediately
     if (!isDbReady) {
       console.warn('⚠️ Using mock events data (DB unavailable)');
-      const { id } = req.params;
-      const mockEvent = MOCK_EVENTS.find((e) => e._id === id || e.slug === id);
-      
-      if (!mockEvent || mockEvent.status !== Status.ACTIVE || mockEvent.publishedState !== PublishedState.PUBLISHED) {
-        res.status(404).json({
-          success: false,
-          error: 'Event not found',
-        });
-        return;
-      }
-
-      const response: ApiResponse = {
-        success: true,
-        data: mockEvent,
-      };
-      res.json(response);
+      res.status(404).json({
+        success: false,
+        error: 'Event not found (DB unavailable)',
+      });
       return;
     }
 
@@ -179,22 +132,11 @@ export class EventController {
 
       res.json(response);
     } catch (error: any) {
-      const { id } = req.params;
-      const mockEvent = MOCK_EVENTS.find((e) => e._id === id || e.slug === id);
-      
-      if (!mockEvent || mockEvent.status !== Status.ACTIVE || mockEvent.publishedState !== PublishedState.PUBLISHED) {
-        res.status(404).json({
-          success: false,
-          error: 'Event not found',
-        });
-        return;
-      }
-
-      const response: ApiResponse = {
-        success: true,
-        data: mockEvent,
-      };
-      res.json(response);
+      res.status(404).json({
+        success: false,
+        error: 'Event not found',
+      });
+      return;
     }
   }
 

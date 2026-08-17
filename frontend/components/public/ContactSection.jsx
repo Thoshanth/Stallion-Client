@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 
 const ContactSection = ({ branches = [] }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,6 +11,7 @@ const ContactSection = ({ branches = [] }) => {
     email: '',
     phone: '',
     branch: '',
+    subject: '',
     message: ''
   });
   const sectionRef = useRef(null);
@@ -47,144 +49,77 @@ const ContactSection = ({ branches = [] }) => {
     e.preventDefault();
     setSubmitStatus({ loading: true, success: false, error: null });
 
-    let timeoutId = null;
-    
     try {
-      const controller = new AbortController();
-      
-      // Set timeout that will abort the request
-      timeoutId = setTimeout(() => {
-        controller.abort();
-      }, 8000); // 8 second timeout
-
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-        signal: controller.signal,
       });
-
-      // Clear timeout if request completed
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
-
-      // Check if response is JSON
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server is currently unavailable. Please try again later or contact us directly.');
-      }
 
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || data.message || 'Failed to send message. Please try again.');
+        throw new Error(data.error || 'Failed to send message.');
       }
 
       setSubmitStatus({ loading: false, success: true, error: null });
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        branch: '',
-        message: ''
-      });
-
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus(prev => ({ ...prev, success: false }));
-      }, 5000);
+      setFormData({ name: '', email: '', phone: '', branch: '', subject: '', message: '' });
+      setTimeout(() => setSubmitStatus(prev => ({ ...prev, success: false })), 5000);
     } catch (error) {
-      // Clear timeout on error
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      
-      // Only log non-abort errors to avoid console clutter
-      if (error.name !== 'AbortError') {
-        console.error('Error submitting form:', error);
-      }
-      
-      let errorMessage = 'Failed to send message. Please try again.';
-      
-      if (error.name === 'AbortError') {
-        errorMessage = 'Request timed out. Please check your connection and try again.';
-      } else if (error.message.includes('fetch failed') || error.message.includes('Failed to fetch') || error.cause?.code === 'ECONNREFUSED') {
-        errorMessage = 'Unable to connect to server. Please contact us directly at support@stallionxtremefitness.com or call +91 9876543210.';
-      } else if (error.message.includes('Server is currently unavailable')) {
-        errorMessage = error.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      setSubmitStatus({ loading: false, success: false, error: errorMessage });
-      
-      // Clear error message after 10 seconds
-      setTimeout(() => {
-        setSubmitStatus(prev => ({ ...prev, error: null }));
-      }, 10000);
+      setSubmitStatus({ loading: false, success: false, error: error.message });
+      setTimeout(() => setSubmitStatus(prev => ({ ...prev, error: null })), 5000);
     }
   };
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 bg-black px-4 md:px-6">
-      <div className="container mx-auto px-2 md:px-4 max-w-6xl">
-        {/* Header */}
-        <div
-          className={`transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
-          }>
+    <section ref={sectionRef} className="bg-black">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+        
+        {/* Left Side: Image & Text */}
+        <div className="relative p-12 md:p-24 flex flex-col justify-center bg-black min-h-[400px]">
+          <Image
+            src="/images/hero.png" // Fallback to hero image, matching the vibe
+            alt="Handstand Pushups"
+            fill
+            className="object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
           
-          <h2 className="text-2xl md:text-4xl font-bold uppercase tracking-wider text-center text-white mb-3 font-akira">
-            Ready to start your journey?
-          </h2>
-          <p className="text-center text-gray-300 mb-10 md:mb-16 max-w-2xl mx-auto font-degular text-base md:text-lg tracking-wider">
-            Fill out the form, and our team will hit you back within 24 hours. Six premier facilities across town, all with one mission: forge strength that extends beyond the gym.
-          </p>
+          <div className="relative z-10 max-w-lg">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold uppercase tracking-widest text-white mb-6 font-akira leading-tight drop-shadow-lg">
+              GOT<br />QUESTIONS<br />WE'VE GOT<br />ANSWERS.
+            </h2>
+            <p className="text-gray-200 text-lg md:text-xl font-medium leading-relaxed drop-shadow-md">
+              Fill out the form, and our team will hit you back within 24 hours.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
-          {/* Contact Form */}
-          
-          <h2 className="text-2xl md:text-4xl font-bold uppercase tracking-wider text-center text-white mb-3 font-akira">
-            Ready to start your journey?
-          </h2>
-          <p className="text-center text-gray-300 mb-10 md:mb-16 max-w-2xl mx-auto font-degular text-base md:text-lg tracking-wider">
-            Fill out the form, and our team will hit you back within 24 hours. Six premier facilities across town, all with one mission: forge strength that extends beyond the gym.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
-          {/* Contact Form */}
-          <div
-            className={`transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
-            }>
+        {/* Right Side: Form */}
+        <div className="bg-white p-12 md:p-24 flex flex-col justify-center">
+          <form onSubmit={handleSubmit} className="w-full max-w-xl mx-auto space-y-10">
             
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-white font-degular mb-2">
-                  FULL NAME
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-colors duration-200"
-                  placeholder="Enter your full name" />
-                
-              </div>
+            <div>
+              <label htmlFor="name" className="block text-black font-semibold uppercase tracking-wider text-sm mb-2">
+                FULL NAME
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full pb-3 border-b border-gray-400 bg-transparent text-black focus:outline-none focus:border-[#e71b4b] transition-colors duration-200"
+              />
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div>
-                <label htmlFor="email" className="block text-white font-degular mb-2">
-                  Email Address *
+                <label htmlFor="email" className="block text-black font-semibold uppercase tracking-wider text-sm mb-2">
+                  EMAIL
                 </label>
                 <input
                   type="email"
@@ -193,169 +128,99 @@ const ContactSection = ({ branches = [] }) => {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-colors duration-200"
-                  placeholder="Enter your email" />
-                
+                  className="w-full pb-3 border-b border-gray-400 bg-transparent text-black focus:outline-none focus:border-[#e71b4b] transition-colors duration-200"
+                />
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-white font-degular mb-2">
+                <label htmlFor="phone" className="block text-black font-semibold uppercase tracking-wider text-sm mb-2">
                   PHONE NO.
                 </label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
-                  required
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-colors duration-200"
-                  placeholder="Enter your phone number" />
-                
+                  className="w-full pb-3 border-b border-gray-400 bg-transparent text-black focus:outline-none focus:border-[#e71b4b] transition-colors duration-200"
+                />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="branch" className="block text-white font-degular mb-2">
-                  Preferred Branch
-                </label>
-                <select
-                  id="branch"
-                  name="branch"
-                  value={formData.branch}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:outline-none focus:border-primary transition-colors duration-200">
-                  
-                  <option value="">Select your preferred branch</option>
-                  {branches.map((b) => (
-                    <option key={b._id} value={b.name}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div>
+              <label htmlFor="branch" className="block text-black font-semibold uppercase tracking-wider text-sm mb-2">
+                SELECT BRANCH
+              </label>
+              <select
+                id="branch"
+                name="branch"
+                value={formData.branch}
+                onChange={handleInputChange}
+                className="w-full pb-3 border-b border-gray-400 bg-transparent text-black focus:outline-none focus:border-[#e71b4b] transition-colors duration-200 appearance-none"
+              >
+                <option value="" disabled>Select your preferred branch</option>
+                <option value="General">General Inquiry</option>
+                {branches.map((b) => (
+                  <option key={b._id} value={b.name}>{b.name}</option>
+                ))}
+              </select>
+            </div>
 
-              <div>
-                <label htmlFor="message" className="block text-white font-degular mb-2">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={4}
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-colors duration-200 resize-vertical"
-                  placeholder="Tell us about your fitness goals...">
-                </textarea>
-              </div>
+            <div>
+              <label htmlFor="subject" className="block text-black font-semibold uppercase tracking-wider text-sm mb-2">
+                SUBJECT
+              </label>
+              <select
+                id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleInputChange}
+                className="w-full pb-3 border-b border-gray-400 bg-transparent text-black focus:outline-none focus:border-[#e71b4b] transition-colors duration-200 appearance-none"
+              >
+                <option value="" disabled>Select a subject</option>
+                <option value="Membership">Membership Details</option>
+                <option value="Personal Training">Personal Training</option>
+                <option value="Feedback">Feedback</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-              {submitStatus.success && (
-                <div className="p-4 bg-green-500/20 border border-green-500 rounded-md">
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-green-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <div>
-                      <p className="text-green-400 font-degular font-semibold">Message sent successfully!</p>
-                      <p className="text-green-300 font-degular text-sm mt-1">We&apos;ll get back to you within 24 hours.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {submitStatus.error && (
-                <div className="p-4 bg-red-500/20 border border-red-500 rounded-md">
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    <div>
-                      <p className="text-red-400 font-degular">{submitStatus.error}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
+            <div>
+              <label htmlFor="message" className="block text-black font-semibold uppercase tracking-wider text-sm mb-2">
+                MESSAGE
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                rows={1}
+                required
+                value={formData.message}
+                onChange={handleInputChange}
+                className="w-full pb-3 border-b border-gray-400 bg-transparent text-black focus:outline-none focus:border-[#e71b4b] transition-colors duration-200 resize-none min-h-[40px]"
+              />
+            </div>
 
+            {submitStatus.success && (
+              <p className="text-green-600 font-medium">Message sent successfully!</p>
+            )}
+            {submitStatus.error && (
+              <p className="text-[#e71b4b] font-medium">{submitStatus.error}</p>
+            )}
+
+            <div className="flex justify-end pt-4">
               <button
                 type="submit"
                 disabled={submitStatus.loading}
-                className="w-full bg-primary text-white px-8 py-4 font-semibold rounded-md hover:bg-primary-600 transition-colors duration-200 font-degular disabled:opacity-70">
-                
-                {submitStatus.loading ? 'Sending...' : 'SUBMIT'}
+                className="bg-[#e71b4b] hover:bg-[#c91841] text-white font-medium uppercase tracking-wider px-10 py-3 rounded-none transition-colors duration-200 disabled:opacity-50 flex items-center gap-2"
+              >
+                {submitStatus.loading ? 'SENDING...' : 'SUBMIT'}
+                {!submitStatus.loading && <span>→</span>}
               </button>
-            </form>
-          </div>
-
-          {/* Contact Information */}
-          <div
-            className={`transition-all duration-1000 delay-300 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
-            }>
-            
-            <div className="bg-gray-900 p-6 md:p-8 rounded-lg">
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-6 font-akira uppercase tracking-wider">
-                Get in Touch
-              </h3>
-
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold font-degular mb-1">Address</h4>
-                    <p className="text-gray-300 font-degular">
-                      Plot No. 119/120, Kukatpally Rd, beside Ramky one marvel above More Super Market, 
-                      Prakasham Panthulu Nagar, Rodamestri Nagar, Hyderabad Telangana 500055
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold font-degular mb-1">Email</h4>
-                    <p className="text-gray-300 font-degular">support@stallionxtremefitness.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold font-degular mb-1">Phone</h4>
-                    <p className="text-gray-300 font-degular">+91 9876543210</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold font-degular mb-1">Hours</h4>
-                    <p className="text-gray-300 font-degular">
-                      Monday - Sunday<br />
-                      6:00 AM - 10:00 PM
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
+            
+          </form>
         </div>
+        
       </div>
     </section>
   );

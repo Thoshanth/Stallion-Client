@@ -14,6 +14,7 @@ export interface IBranchDocument extends Document {
   mapUrl?: string;
   image?: string;
   hoverImage?: string;
+  badge?: string;
   openingHours: {
     monday: { open: string; close: string; closed?: boolean };
     tuesday: { open: string; close: string; closed?: boolean };
@@ -86,6 +87,10 @@ const branchSchema = new Schema<IBranchDocument>(
       type: String,
       trim: true,
     },
+    badge: {
+      type: String,
+      trim: true,
+    },
     openingHours: {
       monday: {
         open: { type: String, default: '06:00' },
@@ -146,9 +151,9 @@ branchSchema.index({ slug: 1 }, { unique: true });
 branchSchema.index({ status: 1, displayOrder: 1 });
 branchSchema.index({ latitude: 1, longitude: 1 });
 
-// Generate slug before saving
+// Generate slug before saving if not provided
 branchSchema.pre('save', function (next) {
-  if (this.isModified('name')) {
+  if (this.isModified('name') && !this.slug) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();

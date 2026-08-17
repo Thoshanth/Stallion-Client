@@ -7,6 +7,8 @@ import FAQSection from '@/components/public/FAQSection';
 import EventsContactSection from '@/components/public/EventsContactSection';
 import { fetchEvents, fetchBranches } from '@/lib/api';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Events | Stallion Xtreme Fitness',
   description: 'Join our upcoming fitness events, challenges, and workshops.',

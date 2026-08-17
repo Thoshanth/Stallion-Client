@@ -11,6 +11,15 @@ import Link from 'next/link';
 
 
 
+const branchImageMap = {
+  "gajulramaram": { image: "/images/branches/ramarambranch.JPG", hoverImage: "/images/branches/ramarambranch.JPG" },
+  "chinthal": { image: "https://stallionxtremefitness.com/images/branches/idplbranc.JPG", hoverImage: "https://stallionxtremefitness.com/images/branches/idplbranc.JPG" },
+  "subash-nagar": { image: "https://stallionxtremefitness.com/images/branches/komapllybranch.JPG", hoverImage: "https://stallionxtremefitness.com/images/branches/komapllybranch.JPG" },
+  "kondapur": { image: "https://stallionxtremefitness.com/images/branches/kondapur.JPG", hoverImage: "https://stallionxtremefitness.com/images/branches/kondapur.JPG" },
+  "suchitra": { image: "https://stallionxtremefitness.com/images/branches/suchitra.JPG", hoverImage: "https://stallionxtremefitness.com/images/branches/suchitra.JPG" },
+  "ashok-nagar-bhel": { image: "https://stallionxtremefitness.com/images/branches/bhelnromal.jpg", hoverImage: "https://stallionxtremefitness.com/images/branches/bhelnromal.jpg" }
+};
+
 const BranchesSection = ({ branches }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -72,23 +81,25 @@ const BranchesSection = ({ branches }) => {
                 
                   {/* Base Image */}
                   <Image
-                  src={branch.image || '/images/hero.png'}
+                  src={branch.image || branchImageMap[branch.slug]?.image || '/images/hero.png'}
                   alt={branch.name}
                   fill
                   className={`object-cover transition-opacity duration-500 ${
                   hoveredIndex === index ? 'opacity-0' : 'opacity-100'}`
                   }
+                  unoptimized={true}
                   quality={85} />
                 
 
                   {/* Hover Image */}
                   <Image
-                  src={branch.hoverImage || branch.image || '/images/hero.png'}
+                  src={branch.hoverImage || branchImageMap[branch.slug]?.hoverImage || branch.image || branchImageMap[branch.slug]?.image || '/images/hero.png'}
                   alt={`${branch.name} hover`}
                   fill
                   className={`object-cover transition-opacity duration-500 absolute inset-0 ${
                   hoveredIndex === index ? 'opacity-100' : 'opacity-0'}`
                   }
+                  unoptimized={true}
                   quality={85} />
                 
 

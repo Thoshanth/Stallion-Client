@@ -2,10 +2,12 @@ import Navbar from '@/components/public/Navbar';
 import Footer from '@/components/public/Footer';
 import Image from 'next/image';
 
+export const dynamic = 'force-dynamic';
+
 async function getTrainers() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/trainers`, {
-      next: { revalidate: 300 }
+      cache: 'no-store'
     });
     
     if (!response.ok) {

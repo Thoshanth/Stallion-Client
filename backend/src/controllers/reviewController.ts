@@ -66,3 +66,29 @@ export const getReviews = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getAdminReviews = async (req: Request, res: Response) => {
+  if (!isDbReady) {
+    return res.status(200).json({
+      success: true,
+      data: MOCK_REVIEWS,
+    });
+  }
+
+  try {
+    const reviews = await Review.find()
+      .sort({ createdAt: -1 })
+      .populate('branch', 'name');
+
+    res.status(200).json({
+      success: true,
+      data: reviews,
+    });
+  } catch (error) {
+    console.error('Error fetching admin reviews:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch reviews',
+    });
+  }
+};

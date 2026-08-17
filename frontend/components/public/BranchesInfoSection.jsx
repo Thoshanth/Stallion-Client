@@ -13,18 +13,19 @@ const branchesData = [
     phone: "+91 8885110136",
     email: "support@stallionxtremefitness.com",
     slug: "gajulramaram",
-    image: "/images/ramaramherosection.JPG",
-    hoverImage: "/images/ramaramhover.JPG"
+    image: "/images/branches/ramarambranch.JPG",
+    hoverImage: "/images/branches/ramarambranch.JPG"
   },
   {
     name: "Stallion Xtreme Fitness - Chinthal Branch",
+    badge: "",
     description: "Where it all began in 2018. Our original STALLION gym featuring no-frills hardcore equipment, championship powerlifting platforms, Atlas stones, and the original 'Wall of Shame' for unracked weights. Pure, raw gym experience for serious lifters.",
     location: "Chintal, Hyderabad",
     phone: "+91 8885110136",
     email: "support@stallionxtremefitness.com",
-    slug: "idpl", // from seed
-    image: "/images/idplherosec.JPG",
-    hoverImage: "/images/chinthalhover.JPG"
+    slug: "chinthal",
+    image: "https://stallionxtremefitness.com/images/branches/idplbranc.JPG",
+    hoverImage: "https://stallionxtremefitness.com/images/branches/idplbranc.JPG"
   },
   {
     name: "Stallion Xtreme Fitness - Subash Nagar Branch",
@@ -33,9 +34,9 @@ const branchesData = [
     location: "Subash Nagar, Hyderabad",
     phone: "+91 8885110136",
     email: "support@stallionxtremefitness.com",
-    slug: "kompally", // closest from seed
-    image: "/images/kompallyherosec.JPG",
-    hoverImage: "/images/subashhover.JPG"
+    slug: "subash-nagar",
+    image: "https://stallionxtremefitness.com/images/branches/komapllybranch.JPG",
+    hoverImage: "https://stallionxtremefitness.com/images/branches/komapllybranch.JPG"
   },
   {
     name: "Stallion Xtreme Fitness - Kondapur Branch",
@@ -45,8 +46,8 @@ const branchesData = [
     phone: "+91 8885110136",
     email: "support@stallionxtremefitness.com",
     slug: "kondapur",
-    image: "/images/kondapurhero.JPG",
-    hoverImage: "/images/kondapurhover.JPG"
+    image: "https://stallionxtremefitness.com/images/branches/kondapur.JPG",
+    hoverImage: "https://stallionxtremefitness.com/images/branches/kondapur.JPG"
   },
   {
     name: "Stallion Xtreme Fitness - Suchitra Branch",
@@ -56,8 +57,8 @@ const branchesData = [
     phone: "+91 8885110136",
     email: "support@stallionxtremefitness.com",
     slug: "suchitra",
-    image: "/images/suchitrahero.JPG",
-    hoverImage: "/images/suchitrahover.JPG"
+    image: "https://stallionxtremefitness.com/images/branches/suchitra.JPG",
+    hoverImage: "https://stallionxtremefitness.com/images/branches/suchitra.JPG"
   },
   {
     name: "Stallion Xtreme Fitness - Ashok Nagar BHEL Branch",
@@ -67,8 +68,8 @@ const branchesData = [
     phone: "+91 8885110136",
     email: "support@stallionxtremefitness.com",
     slug: "ashok-nagar-bhel",
-    image: "/images/bhelhover.jpg",
-    hoverImage: "/images/bhelcover.jpg"
+    image: "https://stallionxtremefitness.com/images/branches/bhelnromal.jpg",
+    hoverImage: "https://stallionxtremefitness.com/images/branches/bhelnromal.jpg"
   }
 ];
 
@@ -132,12 +133,14 @@ const BranchesInfoSection = () => {
                   alt={branch.name}
                   fill
                   className={`object-cover transition-all duration-700 ${hoveredIndex === index ? 'scale-110 opacity-0' : 'scale-100 opacity-100'}`}
+                  unoptimized={true}
                 />
                 <Image
                   src={branch.hoverImage}
                   alt={`${branch.name} hover`}
                   fill
                   className={`object-cover transition-all duration-700 absolute inset-0 ${hoveredIndex === index ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}
+                  unoptimized={true}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                 

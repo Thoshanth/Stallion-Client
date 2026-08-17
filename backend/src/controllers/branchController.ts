@@ -160,7 +160,7 @@ export const getBranches = async (req: Request, res: Response) => {
       status: Status.ACTIVE,
     })
       .sort({ name: 1 })
-      .populate('trainers', 'name profileImage designation')
+      .populate('trainers', 'name profileImage designation experience bio')
       .populate('programs', 'name slug image');
 
     res.status(200).json({
@@ -195,7 +195,7 @@ export const getBranch = async (req: Request, res: Response) => {
 
   try {
     const branch = await Branch.findOne({ slug: req.params.slug, status: Status.ACTIVE })
-      .populate('trainers', 'name profileImage designation bio')
+      .populate('trainers', 'name profileImage designation experience bio')
       .populate('programs', 'name slug image description');
     
     if (!branch) {
