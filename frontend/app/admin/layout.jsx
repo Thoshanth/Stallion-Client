@@ -26,8 +26,11 @@ const AdminLayoutContent = ({ children }) => {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="text-gray-400 font-degular text-lg">Loading...</p>
+        </div>
       </div>);
 
   }
@@ -38,12 +41,12 @@ const AdminLayoutContent = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-[#1a1a1a] flex">
       {/* Sidebar - fixed width */}
       <AdminSidebar />
       
       {/* Main Content - takes up remaining space and offsets for sidebar */}
-      <div className="flex-1 ml-64 p-8">
+      <div className="flex-1 ml-64">
         <main>{children}</main>
       </div>
     </div>);

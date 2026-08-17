@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "warm-pages": "node scripts/warm-pages.js",
+    "dev:warm": "npm run dev & sleep 5 && npm run warm-pages"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",

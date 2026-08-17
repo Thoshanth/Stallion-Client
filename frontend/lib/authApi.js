@@ -27,5 +27,5 @@ export const logout = async () => {
 
 export const getMe = async () => {
   const response = await authApi.get('/me');
-  return response.data.data;
+  return response.data.data.user; // Match the backend response structure
 };

@@ -37,12 +37,12 @@ export class AuthController {
         role: user.role,
       });
 
-      // Set HTTP-only cookie
+      // Set HTTP-only session cookie (expires when browser closes)
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        // No maxAge - session cookie that expires when browser closes
       });
 
       const response: ApiResponse = {
@@ -111,12 +111,12 @@ export class AuthController {
         role: user.role,
       });
 
-      // Set HTTP-only cookie
+      // Set HTTP-only session cookie (expires when browser closes)
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        // No maxAge - session cookie that expires when browser closes
       });
 
       const response: ApiResponse = {
