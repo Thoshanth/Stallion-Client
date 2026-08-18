@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "Node16",
     "ignoreDeprecations": "5.0",
-    "types": ["node"],
+    "types": ["node", "express", "multer", "jsonwebtoken", "cors", "compression", "morgan", "cookie-parser"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
